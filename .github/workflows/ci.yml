@@ -24,4 +24,10 @@ jobs:
           node-version: ${{ matrix.node }}
 
       - name: Rodar smoke test
-        run: node scripts/smoke.js
+        shell: bash
+        run: |
+          set -o pipefail
+          echo "## Smoke test — Node ${{ matrix.node }}" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          node scripts/smoke.js | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"

@@ -236,6 +236,16 @@ try {
     checar('logs limpos', logs.dados.total, 0);
   }
 
+  // Guarda contra "passou sem testar nada": se algum bloco deixar de rodar
+  // (erro engolido, refactor que remove asserções), o CI tem que ficar vermelho.
+  const MINIMO_CHECKS = 60;
+  if (sucessos + falhas < MINIMO_CHECKS) {
+    falhas++;
+    console.log(
+      `  FALHA só ${sucessos + falhas - 1} asserções rodaram, o esperado é no mínimo ${MINIMO_CHECKS}`,
+    );
+  }
+
   console.log('\n' + '-'.repeat(52));
   console.log(`  ${sucessos} passaram, ${falhas} falharam`);
   console.log('-'.repeat(52) + '\n');
