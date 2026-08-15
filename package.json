@@ -1,0 +1,17 @@
+{
+  "name": "vitru-pay-to-learn",
+  "version": "1.0.0",
+  "private": true,
+  "description": "MVP do Vitru Pay-to-Learn: Score de Engajamento convertido em desconto na mensalidade",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "smoke": "node scripts/smoke.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {}
+}
