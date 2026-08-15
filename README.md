@@ -1,5 +1,7 @@
 # Vitru Pay-to-Learn — API do MVP
 
+[![CI](https://github.com/kbruneto/hackaton-vitru/actions/workflows/ci.yml/badge.svg)](https://github.com/kbruneto/hackaton-vitru/actions/workflows/ci.yml)
+
 Back-end que transforma engajamento acadêmico em desconto na mensalidade.
 
 O aluno acumula um **Score Vitru** conforme acessa o AVA e entrega os MAPAs no prazo. Ao atingir o Score alvo, o Agentforce entra em cena: aplica o desconto no financeiro e manda um WhatsApp avisando.
@@ -22,7 +24,7 @@ Para provar que está tudo funcionando:
 node scripts/smoke.js
 ```
 
-Ele sobe a API, roda o fluxo completo da demo e confere ~50 asserções. O mesmo teste roda no GitHub Actions a cada push.
+Ele sobe a API, roda o fluxo completo da demo e confere mais de 60 asserções, incluindo todos os Scores conferidos na mão. O mesmo teste roda no GitHub Actions a cada push, em Node 18, 20 e 22.
 
 ## Estrutura
 
