@@ -86,9 +86,9 @@ export function buscarPerfis({ signal } = {}) {
   return request("/perfis", { signal });
 }
 
-export function buscarAlunos({ signal } = {}) {
-  return request("/alunos", { signal });
-}
+// buscarAlunos foi removida junto com a rota GET /alunos do backend: ela
+// devolvia nome real de todos sem autenticacao, o que contornava a
+// anonimizacao do ranking. Nenhuma tela usava.
 
 export function checarSaude({ signal } = {}) {
   return request("/health", { signal });

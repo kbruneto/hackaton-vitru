@@ -226,23 +226,17 @@ app.get("/teste-banco", async (req, res) => {
 });
 
 /**
- * 3. Lista de alunos.
+ * A rota GET /alunos foi removida de proposito.
  *
- * ATENCAO: rota sem autenticacao. Como o servidor usa a chave secreta, ela
- * ignora RLS e devolve a base inteira para quem chamar. Aceitavel para a demo
- * do hackathon, mas precisa de auth antes de ir para qualquer ambiente real.
+ * Ela devolvia a base inteira, com nome real de todos, sem autenticacao. Como
+ * o servidor usa a chave secreta (que ignora RLS), qualquer pessoa com a URL da
+ * API teria acesso a lista completa: bastava abrir o DevTools, ler a base URL e
+ * chamar a rota. Isso anulava a anonimizacao feita no ranking.
+ *
+ * Nenhuma tela consumia essa rota. Removida, o unico caminho que expoe nome e
+ * o /perfis, restrito a id e nome, que existe para o seletor de perfil e deixa
+ * de ser necessario quando houver login.
  */
-app.get("/alunos", async (req, res) => {
-  try {
-    const { data, error } = await supabase.from(TABLE).select(SELECT_ALUNO);
-
-    if (error) throw error;
-
-    res.json(data ?? []);
-  } catch (erro) {
-    falhou(res, erro);
-  }
-});
 
 /**
  * Lista enxuta de perfis, apenas id e nome.
