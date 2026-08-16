@@ -3,6 +3,7 @@ import logoAsset from "./assets/vitru.png";
 import yellowStar from "./assets/estrela_amarela.png";
 import whiteStar from "./assets/estrela_opacidade.png";
 import modelAsset from "./assets/modelo.png";
+import { useRanking } from "./useRanking";
 import {
   ArrowDownToLine,
   ArrowLeft,
@@ -736,13 +737,13 @@ function NotificationsPage({ items, readIds, openIds, onToggle, onAction }) {
   );
 }
 
+const formatarPosicao = (posicao) => String(posicao).padStart(2, "0");
+
 function RankingPage() {
-  const ranking = [
-    ["01", "Mariana Costa", "98"],
-    ["02", "Rafael Souza", "96"],
-    ["03", "Ana Clara Lima", "95"],
-    ["08", "Júlio Mendes", "93"],
-  ];
+  const { status, dados, erro, recarregar } = useRanking();
+
+  const ranking = dados?.ranking ?? [];
+  const me = dados?.me ?? null;
 
   return (
     <section className="min-w-0 flex-1">
@@ -818,11 +819,11 @@ function RankingPage() {
                 Sua posição
               </p>
               <p className="mt-1 text-7xl font-extrabold leading-none text-[#471d6e]">
-                #08
+                {me ? `#${formatarPosicao(me.posicao)}` : "--"}
               </p>
             </div>
             <div className="rounded-full bg-[#f5b731] px-3 py-2 text-sm font-bold text-white">
-              93 pontos
+              {me ? `${me.pontos} pontos` : "sem pontos"}
             </div>
           </div>
           <div className="mt-8 border-t border-[#e0e0e0] pt-5">
@@ -830,25 +831,68 @@ function RankingPage() {
               <h2 className="text-lg font-semibold">Ranking do polo</h2>
               <span className="text-xs text-[#787878]">Este mês</span>
             </div>
-            <div className="space-y-2">
-              {ranking.map(([position, name, score]) => (
-                <div
-                  className={`flex items-center gap-3 rounded-xl px-3 py-3 ${position === "08" ? "bg-[#f3eafa] text-[#471d6e]" : "bg-[#f8f8f8]"}`}
-                  key={position}
+            {status === "carregando" && (
+              <div className="space-y-2" aria-busy="true">
+                {[0, 1, 2, 3].map((linha) => (
+                  <div
+                    className="h-[46px] animate-pulse rounded-xl bg-[#f0f0f0]"
+                    key={linha}
+                  />
+                ))}
+              </div>
+            )}
+
+            {status === "erro" && (
+              <div
+                className="rounded-xl bg-[#fdf1f0] p-4 text-sm text-[#8a2a21]"
+                role="alert"
+              >
+                <p className="font-semibold">Não foi possível carregar o ranking.</p>
+                <p className="mt-1 text-[#a04a41]">{erro}</p>
+                <button
+                  className="mt-3 h-9 rounded-full bg-[#c43227] px-4 text-sm font-semibold text-white transition hover:brightness-110"
+                  type="button"
+                  onClick={recarregar}
                 >
-                  <span className="w-7 text-sm font-bold text-[#7330b5]">
-                    {position}
-                  </span>
-                  <span className="flex-1 text-sm font-medium">
-                    {name}
-                    {position === "08" && (
-                      <span className="ml-2 text-xs text-[#7330b5]">Você</span>
-                    )}
-                  </span>
-                  <strong className="text-sm">{score}</strong>
-                </div>
-              ))}
-            </div>
+                  Tentar novamente
+                </button>
+              </div>
+            )}
+
+            {status === "ok" && ranking.length === 0 && (
+              <p className="text-sm text-[#676767]">
+                Nenhum aluno classificado neste ciclo ainda.
+              </p>
+            )}
+
+            {status === "ok" && ranking.length > 0 && (
+              <div className="space-y-2">
+                {ranking.map((aluno) => {
+                  const posicao = formatarPosicao(aluno.posicao);
+                  const souEu = me !== null && aluno.id === me.id;
+
+                  return (
+                    <div
+                      className={`flex items-center gap-3 rounded-xl px-3 py-3 ${souEu ? "bg-[#f3eafa] text-[#471d6e]" : "bg-[#f8f8f8]"}`}
+                      key={aluno.id ?? posicao}
+                    >
+                      <span className="w-7 text-sm font-bold text-[#7330b5]">
+                        {posicao}
+                      </span>
+                      <span className="flex-1 text-sm font-medium">
+                        {aluno.nome}
+                        {souEu && (
+                          <span className="ml-2 text-xs text-[#7330b5]">
+                            Você
+                          </span>
+                        )}
+                      </span>
+                      <strong className="text-sm">{aluno.pontos}</strong>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </div>
       </div>
