@@ -6,7 +6,11 @@
   "type": "module",
   "scripts": {
     "dev": "node --env-file=.env index.js",
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "engines": {
+    "node": ">=20.6.0"
   },
   "keywords": [],
   "author": "",

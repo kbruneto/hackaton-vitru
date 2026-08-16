@@ -9,6 +9,23 @@ const BASE_URL = (
 ).replace(/\/$/, "");
 
 /**
+ * Erro de deploy classico: publicar o front sem trocar a VITE_API_URL, que fica
+ * apontando para localhost. O sintoma no browser e generico ("failed to fetch"),
+ * entao avisamos explicitamente qual e a causa.
+ * A URL e embutida em build time, ou seja, so um novo build corrige.
+ */
+if (
+  typeof window !== "undefined" &&
+  window.location.protocol === "https:" &&
+  /localhost|127\.0\.0\.1|TROQUE/.test(BASE_URL)
+) {
+  console.error(
+    `[config] A API esta configurada como "${BASE_URL}", que nao existe fora da sua maquina. ` +
+      "Defina VITE_API_URL com a URL do backend publicado e refaca o build.",
+  );
+}
+
+/**
  * Qual aluno e o usuario logado. Enquanto nao existe autenticacao, isso vem
  * de env para a demo conseguir destacar uma linha no ranking.
  */
