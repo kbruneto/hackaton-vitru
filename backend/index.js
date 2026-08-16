@@ -15,6 +15,8 @@ const COL = {
   nome: "Nome",
   pontos: "PONTOS ACUMULADOS",
   curso: "NOME CURSO",
+  polo: "NOME_POLO",
+  codPolo: "COD_POLO",
 };
 
 /**
@@ -32,11 +34,50 @@ const SELECT_ALUNO = [
   aliased("nome", COL.nome),
   aliased("pontos", COL.pontos),
   aliased("curso", COL.curso),
+  aliased("polo", COL.polo),
+  aliased("codPolo", COL.codPolo),
 ].join(",");
 
 const PORT = Number(process.env.PORT ?? 3000);
 const CORS_ORIGIN = process.env.CORS_ORIGIN ?? "http://localhost:5173";
 const RANKING_LIMIT = 10;
+
+/**
+ * Campos derivados
+ * ---------------------------------------------------------------------------
+ * A tabela do front pede Score, Regiao e Desconto, que NAO existem como coluna
+ * na hack_base. O que existe e "PONTOS ACUMULADOS", NOME_POLO e COD_POLO.
+ * As regras abaixo sao explicitas de proposito: se o produto definir outra
+ * politica, muda aqui e o front acompanha sem alteracao.
+ */
+
+/**
+ * Score de 0 a 100 a partir dos pontos acumulados.
+ * O layout mostra "93/100" e o registro original tem 930 pontos, o que sugere
+ * escala de 10x. INFERENCIA, vale confirmar com quem modelou a tabela.
+ */
+const calcularScore = (pontos) =>
+  Math.max(0, Math.min(100, Math.round(pontos / 10)));
+
+/**
+ * UF do polo. A hack_base nao tem coluna de estado, so o nome do polo.
+ * Mapa minimo para a demo; polo desconhecido volta null em vez de chutar.
+ */
+const UF_POR_POLO = {
+  771: "PR",
+};
+
+const ufDoPolo = (codPolo) => UF_POR_POLO[String(codPolo)] ?? null;
+
+/**
+ * Faixa de desconto por score. Tambem nao existe no banco: e regra de negocio.
+ * Os valores seguem os que aparecem no layout (20%, 10%, 5%).
+ */
+function calcularDesconto(score) {
+  if (score >= 95) return 20;
+  if (score >= 90) return 10;
+  return 5;
+}
 
 /**
  * Validacao de ambiente
@@ -228,10 +269,18 @@ app.get("/dashboard/ranking", async (req, res) => {
         pontos: Number(aluno.pontos ?? 0),
       }))
       .sort((a, b) => b.pontos - a.pontos)
-      .map((aluno, indice) => ({
-        ...aluno,
-        posicao: indice + 1,
-      }));
+      .map((aluno, indice) => {
+        const score = calcularScore(aluno.pontos);
+
+        return {
+          ...aluno,
+          posicao: indice + 1,
+          // Derivados, nao vem do banco. Ver as regras no topo do arquivo.
+          score,
+          uf: ufDoPolo(aluno.codPolo),
+          descontoPercentual: calcularDesconto(score),
+        };
+      });
 
     const me =
       alunoId === undefined

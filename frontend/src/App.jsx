@@ -167,85 +167,7 @@ function Sidebar({ page, onNavigate, onNotifications, unreadCount }) {
   );
 }
 
-function MetricCard({
-  children,
-  className = "",
-  star = whiteStar,
-  starClassName = "opacity-100",
-}) {
-  return (
-    <article
-      className={`relative flex min-h-[274px] flex-1 flex-col justify-between overflow-hidden rounded-3xl p-6 ${className}`}
-    >
-      <img
-        className={`pointer-events-none absolute -right-24 -top-8 h-[432px] w-[432px] object-contain ${starClassName}`}
-        src={star}
-        alt=""
-      />
-      <div className="relative z-10">{children}</div>
-    </article>
-  );
-}
-
-function RankingButton({ light = false }) {
-  return (
-    <button
-      className={`h-10 rounded-full px-4 text-sm font-medium transition hover:brightness-110 ${light ? "bg-white text-[#7330b5]" : "bg-[#7330b5] text-white"}`}
-      type="button"
-    >
-      Ir para o <strong>Ranking</strong>
-    </button>
-  );
-}
-
-function PendingCard({
-  count,
-  title,
-  action,
-  status,
-  urgent = false,
-  onClick,
-}) {
-  return (
-    <article className="relative flex min-h-[199px] flex-col justify-between overflow-hidden rounded-3xl bg-white p-6 text-[#471d6e]">
-      <img
-        className="pointer-events-none absolute -left-2 -top-8 h-[300px] w-[300px] object-contain opacity-20 brightness-0 saturate-0"
-        src={whiteStar}
-        alt=""
-      />
-      <div className="relative z-10">
-        {status && (
-          <span
-            className={`rounded-full px-2 py-1 text-xs text-white ${urgent ? "bg-[#ef4444]" : "bg-[#f1f1f1] text-[#262626]"}`}
-          >
-            {status}
-          </span>
-        )}
-        <p className="mt-3 text-[64px] font-extrabold leading-none sm:text-[80px]">
-          {count}
-        </p>
-        <p className="text-xl font-semibold leading-none">{title}</p>
-        <p className="text-xl leading-none">
-          pendente{title === "Atividades" ? "s" : ""}
-        </p>
-      </div>
-      <button
-        className="relative z-10 h-10 w-fit rounded-full bg-[#f5b731] px-3 text-sm text-white transition hover:brightness-110"
-        type="button"
-        onClick={onClick}
-      >
-        {action}
-      </button>
-    </article>
-  );
-}
-
-function Home({
-  onActivities,
-  onNotifications,
-  unreadCount,
-  submittedActivities,
-}) {
+function Home({ onRanking }) {
   return (
     <section className="min-w-0 flex-1">
       <header>
@@ -259,6 +181,7 @@ function Home({
           Seja bem vindo ao Portal da Vitru
         </p>
       </header>
+      {/* Temporarily hidden while the home layout is being finalized.
       <div className="mt-10 flex flex-col items-start justify-between gap-4 rounded-2xl bg-[#7330b5] px-6 py-4 text-white sm:flex-row sm:items-center">
         <div className="flex items-center gap-4 text-base">
           <span className="relative shrink-0">
@@ -283,80 +206,28 @@ function Home({
         >
           Ir para a central
         </button>
-      </div>
-      <div className="mt-8 grid gap-8 xl:grid-cols-[minmax(0,2fr)_minmax(220px,1fr)]">
-        <div className="grid gap-8">
-          <div className="grid gap-8 md:grid-cols-2">
-            <MetricCard className="bg-[#f5b731] text-white">
-              <p className="text-base">
-                <strong>Score </strong>
-                <span>atual:</span>
-              </p>
-              <p className="mt-2 text-[96px] font-extrabold leading-none sm:text-[128px]">
-                93
-              </p>
-              <div className="relative z-10 mt-12">
-                <p className="text-base font-semibold leading-tight">
-                  Última atualização:
-                </p>
-                <p>15/08 as 20h30</p>
-                <div className="mt-6">
-                  <RankingButton />
-                </div>
-              </div>
-            </MetricCard>
-            <MetricCard className="bg-[#c9a8e7] text-white">
-              <p className="text-base">
-                <strong>Desconto </strong>
-                <span>conquistado:</span>
-              </p>
-              <p className="mt-2 flex items-end gap-2 text-[96px] font-extrabold leading-none sm:text-[128px]">
-                15<span className="text-[54px] sm:text-[64px]">%</span>
-              </p>
-              <div className="relative z-10 mt-12">
-                <p className="text-base font-semibold leading-tight">
-                  Última atualização:
-                </p>
-                <p>15/08 as 20h30</p>
-                <div className="mt-6">
-                  <RankingButton />
-                </div>
-              </div>
-            </MetricCard>
+      </div> */}
+      <div className="mt-8 space-y-8">
+        <article className="relative flex h-fit gap-2 overflow-hidden rounded-[24px] bg-[#7330b5] p-8 text-white">
+          <img className="pointer-events-none absolute -right-24 -top-32 z-0 h-[430px] w-[430px] object-contain" src={yellowStar} alt="" />
+          <img className="pointer-events-none absolute left-[-5%] top-[8%] z-0 h-[520px] w-[520px] object-contain" src={whiteStar} alt="" />
+          <img className="pointer-events-none absolute -bottom-32 right-0 z-10 h-[520px] w-[430px] max-w-[48%] object-cover object-left-top" src={modelAsset} alt="Estudante comemorando seu desempenho" />
+          <div className="relative z-20 max-w-[520px]">
+            <h2 className="max-w-[460px] text-[40px] font-normal leading-[1.05] tracking-[-1px]">Na Vitru,<br /><strong>seu estudo<br />vira <span className="text-[#f5b731]">dinheiro</span>!</strong></h2>
+            <p className="mt-8 max-w-[500px] text-base leading-6 text-white">Suas consistência e desempenho geram saldo todo mês. Escolha:</p>
+            <ul className="mt-5 list-disc space-y-1 pl-6 text-base leading-6 text-white"><li>Ganhe descontos na <strong>mensalidade atual</strong></li><li>Multiplique o benefício em <strong>novos cursos</strong></li></ul>
+            <div className="mt-8 flex max-w-[385px] flex-col gap-2"><button className="h-10 rounded-full bg-[#f5b731] px-4 text-sm font-bold text-white transition hover:brightness-110" type="button" onClick={onRanking}>Conferir benefícios</button></div>
           </div>
-          <MetricCard
-            className="h-fit min-h-0 self-start bg-[#8b47c9] text-white"
-            star={yellowStar}
-            starClassName="opacity-100"
-          >
-            <p className="text-base">
-              <strong>Andamento </strong>
-              <span>do mês:</span>
-            </p>
-            <p className="mt-2 flex items-end gap-2 text-[96px] font-extrabold leading-none sm:text-[128px]">
-              85<span className="text-[54px] sm:text-[64px]">%</span>
-            </p>
-            <div className="relative z-10 mt-4 w-40">
-              <div className="h-2.5 overflow-hidden rounded-full bg-[#7330b5]">
-                <div className="h-full w-[136px] rounded-full bg-[#f5b731]" />
-              </div>
-            </div>
-          </MetricCard>
-        </div>
-        <div className="grid gap-8 sm:grid-cols-2 xl:grid-cols-1">
-          <PendingCard
-            count="03"
-            title="Atividades"
-            action="Ver atividades"
-            status={
-              submittedActivities.includes("review-2")
-                ? undefined
-                : "Urgente - 1 dia"
-            }
-            urgent={!submittedActivities.includes("review-2")}
-            onClick={onActivities}
-          />
-          <PendingCard count="01" title="Trabalho" action="Ver trabalhos" />
+        </article>
+        <div className="grid gap-8 md:grid-cols-2">
+          <article className="relative flex min-h-[332px] flex-col overflow-hidden rounded-[24px] bg-[#f5b731] p-6 text-white">
+            <img className="pointer-events-none absolute -right-20 -top-12 h-[360px] w-[360px] object-contain" src={whiteStar} alt="" />
+            <div className="relative z-10"><p className="text-base"><strong>Score </strong><span>atual:</span></p><p className="mt-2 text-[96px] font-extrabold leading-none sm:text-[128px]">93</p><div className="mt-10"><p className="text-base font-semibold leading-tight">Última atualização:</p><p>15/08 as 20h30</p></div></div><button className="relative z-10 mt-4 h-10 w-fit rounded-full bg-[#7330b5] px-4 text-sm font-medium text-white" type="button" onClick={onRanking}>Ir para o Ranking</button>
+          </article>
+          <article className="relative flex min-h-[332px] flex-col overflow-hidden rounded-[24px] bg-white p-6 text-[#471d6e]">
+            <img className="pointer-events-none absolute -right-32 -top-12 h-[360px] w-[360px] object-contain" src={yellowStar} alt="" />
+            <div className="relative z-10"><p className="text-base"><strong>Tarefas </strong><span>do mês:</span></p><p className="mt-2 flex items-end gap-2 text-[96px] font-extrabold leading-none text-[#7330b5] sm:text-[128px]">85<span className="text-[54px] sm:text-[64px]">%</span></p><div className="mt-4 w-40"><div className="h-2.5 overflow-hidden rounded-full bg-[#E4D4F3]"><div className="h-full w-[136px] rounded-full bg-[#7330B5]" /></div></div><div className="mt-4 text-sm text-[#676767]"><p className="font-semibold">Última atualização:</p><p>15/08 as 20h30</p></div></div><button className="relative z-10 mt-4 h-10 w-fit rounded-full bg-[#7330b5] px-4 text-sm font-medium text-white" type="button" onClick={onRanking}>Ir para o Ranking</button>
+          </article>
         </div>
       </div>
     </section>
@@ -737,163 +608,189 @@ function NotificationsPage({ items, readIds, openIds, onToggle, onAction }) {
   );
 }
 
-const formatarPosicao = (posicao) => String(posicao).padStart(2, "0");
-
 function RankingPage() {
   const { status, dados, erro, recarregar } = useRanking();
 
-  const ranking = dados?.ranking ?? [];
+  // O backend ja devolve ordenado por pontos (maior primeiro) e com posicao
+  // calculada, entao aqui e so renderizar na ordem que chegou.
+  const rankingRows = (dados?.ranking ?? []).map((aluno) => ({
+    position: String(aluno.posicao).padStart(2, "0"),
+    name: aluno.nome,
+    score: `${aluno.score}/100`,
+    region: aluno.uf ?? "--",
+    unit: aluno.polo ?? "--",
+    discount: `${aluno.descontoPercentual}% Off`,
+    isVoce: dados?.me != null && aluno.id === dados.me.id,
+  }));
+
   const me = dados?.me ?? null;
 
   return (
     <section className="min-w-0 flex-1">
       <header>
         <p className="text-sm font-semibold uppercase tracking-[2.8px] text-[#676767]">
-          Desempenho
-        </p>
-        <h1 className="mt-1 text-[32px] font-extrabold leading-tight tracking-[-0.96px]">
           Ranking de Classificação
-        </h1>
-        <p className="mt-1 text-base text-[#676767]">
-          Confira sua posição e as recompensas do ciclo mensal.
         </p>
+        <h1 className="mt-1 text-[32px] font-extrabold leading-tight tracking-[-0.96px]">Confira seu desempenho no ranking</h1>
+        <p className="mt-1 text-base text-[#676767]">Acompanhe seu desempenho, resgate seus descontos e compartilhe seu desempenho</p>
       </header>
-      <div className="mt-8 space-y-8">
-        <article className="relative flex h-fit gap-4 overflow-hidden rounded-[24px] bg-[#7330b5] p-12 text-white">
-          <img
-            className="pointer-events-none absolute -right-16 -top-20 z-0 h-[330px] w-[330px] object-contain"
-            src={yellowStar}
-            alt=""
-          />
-          <img
-            className="pointer-events-none absolute left-[6%] top-[8%] z-0 h-[520px] w-[520px] object-contain opacity-25"
-            src={whiteStar}
-            alt=""
-          />
-          <img
-            className="pointer-events-none absolute -bottom-10 right-0 z-10 h-[520px] w-[430px] max-w-[48%] object-cover object-left-top"
-            src={modelAsset}
-            alt="Estudante comemorando seu desempenho"
-          />
-          <div className="relative z-20 max-w-[520px]">
-            <h2 className="max-w-[460px] text-[40px] font-normal leading-[1.05] tracking-[-1px]">
-              Na Vitru,
-              <br />
-              <strong>
-                seu estudo
-                <br />
-                vira <span className="text-[#f5b731]">dinheiro</span>!
-              </strong>
-            </h2>
-            <p className="mt-8 max-w-[500px] text-base leading-6 text-white">
-              Suas consistência e desempenho geram saldo todo mês. Escolha:
-            </p>
-            <ul className="mt-5 list-disc space-y-1 pl-6 text-base leading-6 text-white">
-              <li>
-                Ganhe descontos na <strong>mensalidade atual</strong>
-              </li>
-              <li>
-                Multiplique o benefício em <strong>novos cursos</strong>
-              </li>
-            </ul>
-            <div className="mt-8 flex max-w-[385px] flex-col gap-2">
-              <button
-                className="h-10 rounded-full bg-[#f5b731] px-4 text-sm font-bold text-white transition hover:brightness-110"
-                type="button"
-              >
-                Resgatar benefício
-              </button>
-              <button
-                className="h-10 rounded-full bg-white px-4 text-sm font-medium text-[#7330b5] transition hover:bg-[#f6effb]"
-                type="button"
-              >
-                Ver retrospectiva
-              </button>
+      <div className="mt-8 grid items-stretch gap-8 lg:grid-cols-3">
+        <article className="relative flex h-full w-full min-w-0 flex-col overflow-hidden rounded-[24px] bg-[#7330b5] px-6 pb-6 pt-12 text-left text-white">
+          <div className="pointer-events-none absolute -top-3 left-0 flex w-full justify-around" aria-hidden="true">
+            {Array.from({ length: 6 }).map((_, index) => <span className="h-6 w-6 shrink-0 rounded-full bg-[#f8f8f8]" key={`top-${index}`} />)}
+          </div>
+          <div className="pointer-events-none absolute -bottom-3 left-0 flex w-full justify-around" aria-hidden="true">
+            {Array.from({ length: 6 }).map((_, index) => <span className="h-6 w-6 shrink-0 rounded-full bg-[#f8f8f8]" key={`bottom-${index}`} />)}
+          </div>
+          <div className="relative z-10 flex h-full flex-col gap-4 text-left">
+            <div>
+              <p className="text-[96px] font-extrabold leading-none">5%</p>
+              <p className="mt-2 text-base leading-5">de desconto para pagar<br />sua mensalidade</p>
             </div>
+            <div className="flex items-center gap-3 text-xs"><span className="flex-1 border-t border-dotted border-white/60" /><span>ou</span><span className="flex-1 border-t border-dotted border-white/60" /></div>
+            <div>
+              <p className="text-[96px] font-extrabold leading-none">20%</p>
+              <p className="mt-2 text-base leading-5">de desconto para comprar<br /><strong>produtos e cursos Vitru</strong></p>
+            </div>
+            <button className="mt-auto h-10 rounded-full bg-white px-4 text-sm font-medium text-[#7330b5]" type="button">Resgatar cupom único</button>
           </div>
         </article>
-        <div className="rounded-3xl bg-white p-6">
-          <div className="flex items-start justify-between">
-            <div>
-              <p className="text-sm font-semibold uppercase tracking-[2px] text-[#676767]">
-                Sua posição
-              </p>
-              <p className="mt-1 text-7xl font-extrabold leading-none text-[#471d6e]">
-                {me ? `#${formatarPosicao(me.posicao)}` : "--"}
-              </p>
-            </div>
-            <div className="rounded-full bg-[#f5b731] px-3 py-2 text-sm font-bold text-white">
-              {me ? `${me.pontos} pontos` : "sem pontos"}
-            </div>
+        <article className="relative flex h-full min-h-0 w-full min-w-0 flex-col justify-between overflow-hidden rounded-[24px] bg-[#f5b731] p-6 text-white">
+          <img className="pointer-events-none absolute -right-20 -top-12 h-[360px] w-[360px] object-contain" src={whiteStar} alt="" />
+          <div className="relative z-10">
+            <p className="text-base"><strong>Score </strong><span>atual:</span></p>
+            <p className="mt-2 text-[96px] font-extrabold leading-none">
+              {me ? me.score : "--"}
+            </p>
+            <p className="mt-0 text-[48px] font-extrabold leading-none">/ 100</p>
           </div>
-          <div className="mt-8 border-t border-[#e0e0e0] pt-5">
-            <div className="mb-3 flex items-center justify-between">
-              <h2 className="text-lg font-semibold">Ranking do polo</h2>
-              <span className="text-xs text-[#787878]">Este mês</span>
+            <div className="relative z-10 mt-8 text-base">
+            <p className="font-semibold leading-tight">Última atualização:</p>
+            <p>
+              {dados?.atualizadoEm
+                ? new Date(dados.atualizadoEm).toLocaleString("pt-BR", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })
+                : "--"}
+            </p>
+            <button className="mt-4 h-10 w-fit rounded-full bg-[#7330b5] px-4 text-sm font-medium text-white" type="button">Ver Classificação</button>
+          </div>
+        </article>
+        <article className="flex h-fit min-h-0 w-full min-w-0 flex-col overflow-hidden rounded-[24px] bg-white text-[#262626]">
+          <div className="relative h-[152px] shrink-0 overflow-hidden bg-[#7330b5] p-4">
+            <img className="pointer-events-none absolute -right-16 -top-14 h-[250px] w-[250px] object-contain" src={yellowStar} alt="" />
+            <img className="relative z-10 h-6 w-auto brightness-0 invert" src={logoAsset} alt="Vitru" />
+          </div>
+          <div className="flex flex-1 flex-col p-4">
+            <div>
+              <h2 className="text-base font-bold leading-5">Retrospectiva Vitru</h2>
+              <p className="text-two-lines mt-2 text-[10px] leading-3">Confira seus melhores momentos conosco!</p>
             </div>
-            {status === "carregando" && (
-              <div className="space-y-2" aria-busy="true">
-                {[0, 1, 2, 3].map((linha) => (
-                  <div
-                    className="h-[46px] animate-pulse rounded-xl bg-[#f0f0f0]"
-                    key={linha}
-                  />
-                ))}
+            <div className="mt-2 h-0.5 w-full bg-[#f5b731]" />
+            <div className="mt-4 grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <h3 className="text-two-lines text-[10px] font-bold leading-3">Disciplinas<br />mais estudadas</h3>
+                {['Cálculo Numérico', 'Geometria Analítica', 'Algoritmos e Estrutura de Dados', 'Ciência da Computação', 'História da Computação'].map((item, index) => <div className="flex items-start gap-2" key={item}><span className="w-3 shrink-0 text-right text-base font-bold leading-4 text-[#f5b731]">{index + 1}</span><span className="text-two-lines text-[10px] leading-3">{item}</span></div>)}
               </div>
-            )}
+              <div className="space-y-2">
+                <h3 className="text-two-lines text-[10px] font-bold leading-3">Suas<br />melhores notas</h3>
+                {['Prova 9,8 (Geometria A...)', 'Prova 9,8 (História da...)', 'Trabalho 8,8 (História da...)', 'Prova 8,5 (Geometria A...)', 'Atividade 8,5 (Geometria A...)'].map((item, index) => <div className="flex items-start gap-2" key={item}><span className="w-3 shrink-0 text-right text-base font-bold leading-4 text-[#f5b731]">{index + 1}</span><span className="text-two-lines text-[10px] leading-3">{item}</span></div>)}
+              </div>
+            </div>
+            <button className="mt-4 h-10 rounded-full bg-[#7330b5] px-4 text-sm font-medium text-white" type="button">Compartilhar resultados</button>
+          </div>
+        </article>
+      </div>
+      <div className="mt-8 overflow-x-auto rounded-lg bg-white">
+        <table className="w-full min-w-[760px] text-left text-sm">
+          <thead className="bg-[#f1f1f1] text-xs text-[#676767]">
+            <tr>
+              <th className="px-3 py-3 font-medium">Posição　↕</th>
+              <th className="px-3 py-3 font-medium">Nome do estudante　↕</th>
+              <th className="px-3 py-3 font-medium">Score　↕</th>
+              <th className="px-3 py-3 font-medium">Região</th>
+              <th className="px-3 py-3 font-medium">Unidade　↕</th>
+              <th className="px-3 py-3 font-medium">Desconto　↕</th>
+            </tr>
+          </thead>
+          <tbody>
+            {status === "carregando" &&
+              [0, 1, 2].map((linha) => (
+                <tr className="border-b border-[#e0e0e0] last:border-0" key={`skeleton-${linha}`}>
+                  <td className="px-3 py-4" colSpan={6}>
+                    <span className="block h-5 animate-pulse rounded bg-[#f0f0f0]" />
+                  </td>
+                </tr>
+              ))}
 
             {status === "erro" && (
-              <div
-                className="rounded-xl bg-[#fdf1f0] p-4 text-sm text-[#8a2a21]"
-                role="alert"
-              >
-                <p className="font-semibold">Não foi possível carregar o ranking.</p>
-                <p className="mt-1 text-[#a04a41]">{erro}</p>
-                <button
-                  className="mt-3 h-9 rounded-full bg-[#c43227] px-4 text-sm font-semibold text-white transition hover:brightness-110"
-                  type="button"
-                  onClick={recarregar}
+              <tr>
+                <td className="px-3 py-6" colSpan={6}>
+                  <p className="text-sm font-semibold text-[#8a2a21]">
+                    Não foi possível carregar o ranking.
+                  </p>
+                  <p className="mt-1 text-xs text-[#a04a41]">{erro}</p>
+                  <button
+                    className="mt-3 h-9 rounded-full bg-[#7330b5] px-4 text-sm font-medium text-white"
+                    type="button"
+                    onClick={recarregar}
+                  >
+                    Tentar novamente
+                  </button>
+                </td>
+              </tr>
+            )}
+
+            {status === "ok" && rankingRows.length === 0 && (
+              <tr>
+                <td className="px-3 py-6 text-sm text-[#676767]" colSpan={6}>
+                  Nenhum estudante classificado neste ciclo ainda.
+                </td>
+              </tr>
+            )}
+
+            {status === "ok" &&
+              rankingRows.map((row) => (
+                <tr
+                  className={`border-b border-[#e0e0e0] last:border-0 ${row.isVoce ? "bg-[#f3eafa] font-semibold text-[#471d6e]" : ""}`}
+                  key={row.position}
                 >
-                  Tentar novamente
-                </button>
-              </div>
-            )}
-
-            {status === "ok" && ranking.length === 0 && (
-              <p className="text-sm text-[#676767]">
-                Nenhum aluno classificado neste ciclo ainda.
-              </p>
-            )}
-
-            {status === "ok" && ranking.length > 0 && (
-              <div className="space-y-2">
-                {ranking.map((aluno) => {
-                  const posicao = formatarPosicao(aluno.posicao);
-                  const souEu = me !== null && aluno.id === me.id;
-
-                  return (
-                    <div
-                      className={`flex items-center gap-3 rounded-xl px-3 py-3 ${souEu ? "bg-[#f3eafa] text-[#471d6e]" : "bg-[#f8f8f8]"}`}
-                      key={aluno.id ?? posicao}
-                    >
-                      <span className="w-7 text-sm font-bold text-[#7330b5]">
-                        {posicao}
+                  <td className="px-3 py-4">{row.position}</td>
+                  <td className="px-3 py-4">
+                    <div className="flex items-center gap-3">
+                      <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#7330b5]">
+                        <img className="h-5 w-5 object-contain" src={yellowStar} alt="" />
                       </span>
-                      <span className="flex-1 text-sm font-medium">
-                        {aluno.nome}
-                        {souEu && (
-                          <span className="ml-2 text-xs text-[#7330b5]">
-                            Você
-                          </span>
+                      <span>
+                        {row.name}
+                        {row.isVoce && (
+                          <span className="ml-2 text-xs text-[#7330b5]">Você</span>
                         )}
                       </span>
-                      <strong className="text-sm">{aluno.pontos}</strong>
                     </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
+                  </td>
+                  <td className="px-3 py-4">{row.score}</td>
+                  <td className="px-3 py-4">{row.region}</td>
+                  <td className="px-3 py-4">{row.unit}</td>
+                  <td className="px-3 py-4">
+                    <span className="rounded-full bg-[#7330b5] px-2 py-1 text-xs text-white">{row.discount}</span>
+                  </td>
+                </tr>
+              ))}
+          </tbody>
+        </table>
+      </div>
+      <div className="mt-6 flex items-center justify-end gap-3 text-xs text-[#7330b5]">
+        <span>Página 1 de 10</span>
+        <div className="flex items-center gap-2">
+          <button className="flex h-8 w-8 items-center justify-center rounded-full border border-[#e0e0e0] bg-white text-[#a0a0a0]" type="button" aria-label="Primeira página">«</button>
+          <button className="flex h-8 w-8 items-center justify-center rounded-full border border-[#e0e0e0] bg-white text-[#a0a0a0]" type="button" aria-label="Página anterior">‹</button>
+          <button className="flex h-8 w-8 items-center justify-center rounded-full border border-[#7330b5] bg-[#7330b5] font-semibold text-white" type="button" aria-current="page">1</button>
+          <button className="flex h-8 w-8 items-center justify-center rounded-full border border-[#e0e0e0] bg-white text-[#a0a0a0]" type="button" aria-label="Próxima página">›</button>
+          <button className="flex h-8 w-8 items-center justify-center rounded-full border border-[#e0e0e0] bg-white text-[#a0a0a0]" type="button" aria-label="Última página">»</button>
         </div>
       </div>
     </section>
@@ -962,12 +859,7 @@ function App() {
   }, [activityId]);
   const renderPage =
     page === "home" ? (
-      <Home
-        onActivities={() => setPage("activities")}
-        onNotifications={openNotifications}
-        unreadCount={unreadCount}
-        submittedActivities={submittedActivities}
-      />
+      <Home onRanking={() => setPage("ranking")} />
     ) : page === "activities" ? (
       <ActivitiesList onOpen={openActivity} />
     ) : page === "notifications" ? (
