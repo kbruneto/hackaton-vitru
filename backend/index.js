@@ -42,6 +42,9 @@ const PORT = Number(process.env.PORT ?? 3000);
 const CORS_ORIGIN = process.env.CORS_ORIGIN ?? "http://localhost:5173";
 const RANKING_LIMIT = 10;
 
+/** Rotulo que substitui o nome dos outros alunos no ranking. */
+const NOME_ANONIMO = "Estudante";
+
 /**
  * Campos derivados
  * ---------------------------------------------------------------------------
@@ -242,6 +245,31 @@ app.get("/alunos", async (req, res) => {
 });
 
 /**
+ * Lista enxuta de perfis, apenas id e nome.
+ *
+ * Existe para o seletor de perfil da interface, que faz o papel do login
+ * enquanto autenticacao nao existe. Quando entrar login de verdade, quem e o
+ * usuario passa a vir do token e esta rota deixa de ser necessaria.
+ */
+app.get("/perfis", async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from(TABLE)
+      .select([aliased("id", COL.id), aliased("nome", COL.nome)].join(","));
+
+    if (error) throw error;
+
+    const perfis = (data ?? []).sort((a, b) =>
+      String(a.nome).localeCompare(String(b.nome), "pt-BR"),
+    );
+
+    res.json(perfis);
+  } catch (erro) {
+    falhou(res, erro);
+  }
+});
+
+/**
  * 4. Ranking do ciclo.
  *
  * A ordenacao acontece em JS, nao no banco. Motivo: o .order() do postgrest-js
@@ -262,6 +290,8 @@ app.get("/dashboard/ranking", async (req, res) => {
     if (error) throw error;
 
     const alunoId = req.query.alunoId;
+    const souEu = (id) =>
+      alunoId !== undefined && String(id) === String(alunoId);
 
     const classificados = (data ?? [])
       .map((aluno) => ({
@@ -271,10 +301,20 @@ app.get("/dashboard/ranking", async (req, res) => {
       .sort((a, b) => b.pontos - a.pontos)
       .map((aluno, indice) => {
         const score = calcularScore(aluno.pontos);
+        const souVoce = souEu(aluno.id);
 
+        // Montamos o objeto campo por campo em vez de espalhar o registro:
+        // assim nada entra na resposta por acidente quando o select crescer.
         return {
-          ...aluno,
+          id: aluno.id,
           posicao: indice + 1,
+          // O nome real so acompanha o proprio aluno. O dos demais e trocado
+          // aqui, no servidor, entao nem chega no browser.
+          nome: souVoce ? aluno.nome : NOME_ANONIMO,
+          souVoce,
+          pontos: aluno.pontos,
+          curso: aluno.curso,
+          polo: aluno.polo,
           // Derivados, nao vem do banco. Ver as regras no topo do arquivo.
           score,
           uf: ufDoPolo(aluno.codPolo),
@@ -282,12 +322,7 @@ app.get("/dashboard/ranking", async (req, res) => {
         };
       });
 
-    const me =
-      alunoId === undefined
-        ? null
-        : (classificados.find(
-            (aluno) => String(aluno.id) === String(alunoId),
-          ) ?? null);
+    const me = classificados.find((aluno) => aluno.souVoce) ?? null;
 
     res.json({
       atualizadoEm: new Date().toISOString(),

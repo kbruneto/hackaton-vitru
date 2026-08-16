@@ -3,12 +3,14 @@ import logoAsset from "./assets/vitru.png";
 import yellowStar from "./assets/estrela_amarela.png";
 import whiteStar from "./assets/estrela_opacidade.png";
 import modelAsset from "./assets/modelo.png";
-import { useRanking } from "./useRanking";
+import { usePerfis, useRanking } from "./useRanking";
+import { ALUNO_ID_INICIAL } from "./api";
 import {
   ArrowDownToLine,
   ArrowLeft,
   Bell,
   CalendarDays,
+  Check,
   ChevronDown,
   ChevronRight,
   Crown,
@@ -107,7 +109,101 @@ const postSubmissionNotifications = [
   },
 ];
 
-function Sidebar({ page, onNavigate, onNotifications, unreadCount }) {
+/**
+ * Seletor de perfil.
+ *
+ * Faz o papel do login na demo: trocar o perfil muda quem e o "voce" no
+ * ranking, e o backend passa a devolver o nome real apenas dessa pessoa.
+ */
+function SeletorPerfil({ perfis, perfilAtual, onTrocar }) {
+  const [aberto, setAberto] = useState(false);
+  const containerRef = useRef(null);
+
+  // Fecha ao clicar fora ou apertar Escape.
+  useEffect(() => {
+    if (!aberto) return undefined;
+
+    const cliqueFora = (evento) => {
+      if (!containerRef.current?.contains(evento.target)) setAberto(false);
+    };
+    const tecla = (evento) => {
+      if (evento.key === "Escape") setAberto(false);
+    };
+
+    document.addEventListener("mousedown", cliqueFora);
+    document.addEventListener("keydown", tecla);
+    return () => {
+      document.removeEventListener("mousedown", cliqueFora);
+      document.removeEventListener("keydown", tecla);
+    };
+  }, [aberto]);
+
+  return (
+    <div className="relative" ref={containerRef}>
+      <button
+        className="flex items-center gap-1"
+        type="button"
+        aria-label={
+          perfilAtual ? `Perfil: ${perfilAtual.nome}` : "Selecionar perfil"
+        }
+        aria-haspopup="menu"
+        aria-expanded={aberto}
+        onClick={() => setAberto((valor) => !valor)}
+      >
+        <UserRound size={20} strokeWidth={1.5} />
+        <ChevronDown size={14} strokeWidth={1.5} />
+      </button>
+
+      {aberto && (
+        <div
+          className="absolute right-0 top-9 z-20 w-60 overflow-hidden rounded-xl bg-white py-1 shadow-lg ring-1 ring-black/5"
+          role="menu"
+        >
+          <p className="px-4 py-2 text-[10px] font-semibold uppercase tracking-[1.5px] text-[#a0a0a0]">
+            Ver como
+          </p>
+
+          {perfis.length === 0 && (
+            <p className="px-4 py-2 text-sm text-[#676767]">
+              Nenhum perfil disponível.
+            </p>
+          )}
+
+          {perfis.map((perfil) => {
+            const selecionado = String(perfil.id) === String(perfilAtual?.id);
+
+            return (
+              <button
+                className={`flex w-full items-center justify-between gap-2 px-4 py-2 text-left text-sm transition ${selecionado ? "bg-[#f3eafa] font-semibold text-[#471d6e]" : "text-[#262626] hover:bg-[#f8f8f8]"}`}
+                key={perfil.id}
+                type="button"
+                role="menuitemradio"
+                aria-checked={selecionado}
+                onClick={() => {
+                  onTrocar(perfil.id);
+                  setAberto(false);
+                }}
+              >
+                <span className="truncate">{perfil.nome}</span>
+                {selecionado && <Check size={14} strokeWidth={2} />}
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function Sidebar({
+  page,
+  onNavigate,
+  onNotifications,
+  unreadCount,
+  perfis,
+  perfilAtual,
+  onTrocarPerfil,
+}) {
   return (
     <aside className="w-full shrink-0 lg:w-[300px]">
       <div className="flex items-center justify-between">
@@ -130,9 +226,11 @@ function Sidebar({ page, onNavigate, onNotifications, unreadCount }) {
               </span>
             )}
           </button>
-          <button type="button" aria-label="Perfil">
-            <UserRound size={20} strokeWidth={1.5} />
-          </button>
+          <SeletorPerfil
+            perfis={perfis}
+            perfilAtual={perfilAtual}
+            onTrocar={onTrocarPerfil}
+          />
         </div>
       </div>
 
@@ -167,7 +265,10 @@ function Sidebar({ page, onNavigate, onNotifications, unreadCount }) {
   );
 }
 
-function Home({ onRanking }) {
+/** Primeiro nome, para a saudacao ficar menos formal. */
+const primeiroNome = (nome) => String(nome ?? "").trim().split(/\s+/)[0];
+
+function Home({ onRanking, nome }) {
   return (
     <section className="min-w-0 flex-1">
       <header>
@@ -175,7 +276,7 @@ function Home({ onRanking }) {
           Página inicial
         </p>
         <h1 className="mt-1 text-[32px] font-extrabold leading-tight tracking-[-0.96px]">
-          Olá, Júlio!
+          {nome ? `Olá, ${primeiroNome(nome)}!` : "Olá!"}
         </h1>
         <p className="mt-1 text-base text-[#676767]">
           Seja bem vindo ao Portal da Vitru
@@ -608,8 +709,8 @@ function NotificationsPage({ items, readIds, openIds, onToggle, onAction }) {
   );
 }
 
-function RankingPage() {
-  const { status, dados, erro, recarregar } = useRanking();
+function RankingPage({ alunoId }) {
+  const { status, dados, erro, recarregar } = useRanking(alunoId);
 
   // O backend ja devolve ordenado por pontos (maior primeiro) e com posicao
   // calculada, entao aqui e so renderizar na ordem que chegou.
@@ -620,7 +721,8 @@ function RankingPage() {
     region: aluno.uf ?? "--",
     unit: aluno.polo ?? "--",
     discount: `${aluno.descontoPercentual}% Off`,
-    isVoce: dados?.me != null && aluno.id === dados.me.id,
+    // Quem e "voce" e decidido pelo backend, que tambem e quem sabe o nome real.
+    isVoce: aluno.souVoce === true,
   }));
 
   const me = dados?.me ?? null;
@@ -799,6 +901,13 @@ function RankingPage() {
 
 function App() {
   const [page, setPage] = useState("home");
+  // Quem e o usuario da sessao. Comeca no valor de env e pode ser trocado no
+  // seletor do header, que faz o papel do login enquanto ele nao existe.
+  const [alunoId, setAlunoId] = useState(ALUNO_ID_INICIAL);
+  const { dados: perfis } = usePerfis();
+  const listaPerfis = perfis ?? [];
+  const perfilAtual =
+    listaPerfis.find((perfil) => String(perfil.id) === String(alunoId)) ?? null;
   const [activityId, setActivityId] = useState(null);
   const [submittedActivities, setSubmittedActivities] = useState([]);
   const [, setSubmittedVersion] = useState(0);
@@ -859,7 +968,10 @@ function App() {
   }, [activityId]);
   const renderPage =
     page === "home" ? (
-      <Home onRanking={() => setPage("ranking")} />
+      <Home
+        onRanking={() => setPage("ranking")}
+        nome={perfilAtual?.nome}
+      />
     ) : page === "activities" ? (
       <ActivitiesList onOpen={openActivity} />
     ) : page === "notifications" ? (
@@ -871,7 +983,7 @@ function App() {
         onAction={handleNotificationAction}
       />
     ) : page === "ranking" ? (
-      <RankingPage />
+      <RankingPage alunoId={alunoId} />
     ) : (
       <ActivityDetail
         submitted={submittedActivities.includes(activityId)}
@@ -887,6 +999,9 @@ function App() {
           onNavigate={setPage}
           onNotifications={openNotifications}
           unreadCount={unreadCount}
+          perfis={listaPerfis}
+          perfilAtual={perfilAtual}
+          onTrocarPerfil={setAlunoId}
         />
         {renderPage}
       </div>

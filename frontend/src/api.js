@@ -26,10 +26,10 @@ if (
 }
 
 /**
- * Qual aluno e o usuario logado. Enquanto nao existe autenticacao, isso vem
- * de env para a demo conseguir destacar uma linha no ranking.
+ * Perfil inicial da sessao. Enquanto nao existe autenticacao, quem e o usuario
+ * comeca vindo de env e depois pode ser trocado no seletor da interface.
  */
-export const ALUNO_ID = import.meta.env.VITE_ALUNO_ID ?? null;
+export const ALUNO_ID_INICIAL = import.meta.env.VITE_ALUNO_ID ?? null;
 
 async function request(path, { signal } = {}) {
   let resposta;
@@ -63,13 +63,27 @@ async function request(path, { signal } = {}) {
 
 /**
  * Ranking do ciclo.
+ *
+ * O alunoId define quem e o "voce": o backend devolve o nome real apenas dessa
+ * pessoa e anonimiza os demais. Sem alunoId, todos vem anonimizados.
+ *
+ * @param {string|number|null} alunoId
  * @returns {Promise<{atualizadoEm: string, total: number, ranking: Array, me: object|null}>}
  */
-export function buscarRanking({ signal } = {}) {
-  const query = ALUNO_ID
-    ? `?alunoId=${encodeURIComponent(ALUNO_ID)}`
-    : "";
+export function buscarRanking(alunoId, { signal } = {}) {
+  const query =
+    alunoId === null || alunoId === undefined || alunoId === ""
+      ? ""
+      : `?alunoId=${encodeURIComponent(alunoId)}`;
   return request(`/dashboard/ranking${query}`, { signal });
+}
+
+/**
+ * Perfis disponiveis para o seletor, que substitui o login na demo.
+ * @returns {Promise<Array<{id: number, nome: string}>>}
+ */
+export function buscarPerfis({ signal } = {}) {
+  return request("/perfis", { signal });
 }
 
 export function buscarAlunos({ signal } = {}) {
