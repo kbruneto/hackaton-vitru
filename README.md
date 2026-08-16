@@ -70,18 +70,34 @@ O programa oferece desconto médio de 10% ao grupo sinalizado como risco alto, d
 |---|---|---|
 | Alunos atendidos | 10.063 | 33.454 |
 | Custo do desconto por ano | R$ 3,02 mi | R$ 8,30 mi |
-| Alunos retidos por mês para se pagar | 183 | 608 |
-| **Ponto de equilíbrio** | **evitar 3,6% da evasão** | **evitar 3,6% da evasão** |
+| Alunos retidos por mês para se pagar | 203 | 676 |
+| **Ponto de equilíbrio** | **evitar 4,0% da evasão** | **evitar 4,0% da evasão** |
 
 **O ponto de equilíbrio é idêntico nas duas bases, e isso não é coincidência.** Ele não depende do ticket nem do tamanho da base:
 
 ```
-ponto de equilíbrio = desconto × (tamanho do grupo / evasão) × (12 / 66)
-                    = 10% × 2 × 0,1818
-                    = 3,6%
+ponto de equilíbrio = (grupo / evasão) × desconto × 12 / ((1 − desconto) × 66)
+                    = 2 × 10% × 12 / (90% × 66)
+                    = 4,0%
 ```
 
-Só as regras do programa entram na conta. A conclusão é estrutural: **se o Pay-to-Learn evitar 4 de cada 100 evasões, ele se paga.** Acima disso, é lucro.
+Só as regras do programa entram na conta. A conclusão é estrutural: **se o programa evitar 1 em cada 25 evasões, ele se paga.** Acima disso, é lucro.
+
+O aluno retido continua no programa, portanto continua com desconto: ele preserva 90% do ticket, não o ticket cheio. O modelo conta assim.
+
+### O custo é cobrado inteiro, a retenção não é presumida
+
+O desconto é pago a **todo** o grupo, independente de quantos ficam. O benefício conta apenas quem foi retido. Ou seja, o ponto de equilíbrio de 4% **já assume que 96% do desconto é gasto em alunos que saem de qualquer forma**.
+
+O pior caso é conhecido e limitado:
+
+| | Base do desafio | Números públicos |
+|---|---|---|
+| Custo do programa por ano | R$ 3,02 mi | R$ 8,30 mi |
+| Receita já perdida por ano | R$ 83,02 mi | R$ 228,27 mi |
+| **Custo como % da perda atual** | **3,6%** | **3,6%** |
+
+Com retenção zero, o programa custa o equivalente a 3,6% do que a evasão já custa hoje. A exposição máxima é mensurável e pequena diante do problema.
 
 ### Retorno em 12 meses
 
@@ -89,12 +105,18 @@ Média dos dois cenários, custo do programa de R$ 5,66 mi/ano:
 
 | Evasão evitada | Receita preservada | Resultado líquido | Retorno |
 |---|---|---|---|
-| 3,6% | R$ 5,96 mi | R$ 0,30 mi | 1,1x |
-| 10% | R$ 16,40 mi | R$ 10,74 mi | 2,9x |
-| 20% | R$ 32,80 mi | R$ 27,14 mi | 5,8x |
-| 30% | R$ 49,20 mi | R$ 43,54 mi | 8,7x |
+| 4,0% | R$ 5,96 mi | R$ 0,30 mi | 1,1x |
+| 10% | R$ 14,76 mi | R$ 9,10 mi | 2,6x |
+| 20% | R$ 29,52 mi | R$ 23,86 mi | 5,2x |
+| 30% | R$ 44,28 mi | R$ 38,62 mi | 7,8x |
 
-O desconto é pago apenas enquanto o incentivo dura. O aluno retido continua gerando receita depois, então o retorno real é maior que o da tabela.
+Conservador em dois pontos: o desconto é pago apenas enquanto o incentivo dura, e o valor do aluno retido a partir do 13º mês é ignorado.
+
+### Limitação conhecida do desenho atual
+
+No desenho atual a recompensa vai para o topo do ranking, ou seja, para os alunos mais engajados, que são os **menos propensos a evadir**. Parte do desconto vai para quem ficaria de qualquer forma.
+
+É a principal razão para o modelo preditivo ser o próximo passo: ele desloca o incentivo de "premiar quem vai bem" para "resgatar quem está saindo", elevando o retorno por real investido. Mesmo com a mira atual, que é o pior caso, a conta fecha evitando 4% da evasão.
 
 ## Diferenciais
 
@@ -104,7 +126,7 @@ O desconto é pago apenas enquanto o incentivo dura. O aluno retido continua ger
 
 **Usa o dado que a instituição já tem.** Nenhuma coleta nova, nenhum formulário, nenhum questionário. O score sai de colunas que já existem na base de engajamento.
 
-**A conta fecha com margem folgada.** Basta evitar 3,6% da evasão para o programa se pagar, e esse número não depende do ticket nem do tamanho da base. É um piso baixo para uma aposta que, no cenário intermediário, devolve 5,8x.
+**A conta fecha com margem folgada.** Basta evitar 1 em cada 25 evasões para o programa se pagar, e esse número não depende do ticket nem do tamanho da base. É um piso baixo para uma aposta que, no cenário intermediário, devolve 5,2x. E o cálculo já assume que o desconto da grande maioria é gasto em alunos que saem de qualquer forma.
 
 ## Arquitetura
 

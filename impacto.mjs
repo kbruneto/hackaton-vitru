@@ -58,7 +58,12 @@ function calcular(c) {
   const custoMes = grupo * c.ticket * DESCONTO;
   const custoAno = custoMes * 12;
 
-  const receitaPorRetidoAno = c.ticket * FATOR_12M;
+  /**
+   * O aluno retido continua no programa, ou seja, continua com desconto.
+   * Entao ele preserva ticket x (1 - desconto), nao o ticket cheio.
+   * Contar a receita cheia aqui superestimaria o retorno.
+   */
+  const receitaPorRetidoAno = c.ticket * (1 - DESCONTO) * FATOR_12M;
   const retidosBreakEven = custoAno / receitaPorRetidoAno;
 
   return {
@@ -113,8 +118,27 @@ p();
 
 p("Observacao: o ponto de equilibrio e o mesmo nos dois cenarios porque nao");
 p("depende do ticket nem do tamanho da base. Ele sai de");
-p("  desconto x (grupo / evasao) x (12 / 66)");
+p("  (grupo / evasao) x desconto x 12 / ((1 - desconto) x 66)");
 p("ou seja, so das regras do programa. A conclusao e estrutural.");
+p();
+
+/**
+ * Pior caso: o programa nao retem ninguem.
+ * O desconto pago a quem sai de qualquer forma e custo afundado, sem retorno.
+ * O modelo ja cobra 100% desse custo, entao o ponto de equilibrio acima ja
+ * assume que o desconto da maioria e desperdicado.
+ */
+p("=== PIOR CASO: RETENCAO ZERO ===");
+for (const r of resultados) {
+  p(`${r.nome}`);
+  p(`  custo do programa/ano:        ${brl(r.custoAno)}`);
+  p(`  receita ja perdida/ano:       ${brl(r.perdaAno)}`);
+  p(`  custo como % da perda atual:  ${pct(r.custoAno / r.perdaAno)}`);
+}
+p();
+p("Ou seja: a exposicao maxima do programa e conhecida e limitada. Mesmo");
+p("retendo zero aluno, o gasto equivale a uma fracao pequena do que a");
+p("evasao ja custa hoje.");
 p();
 
 // --------------------------------------------------------------- cenarios
